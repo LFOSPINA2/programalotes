@@ -28,9 +28,18 @@ jobs:
         pip install cython
         pip install buildozer
 
-    - name: Update Buildozer & SDK components
+    - name: Accept SDK licenses
       run: |
-        buildozer android update
+        mkdir -p ~/.android
+        echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > ~/.android/repositories.cfg || true
+
+    - name: Set up Buildozer environment
+      run: |
+        buildozer init || true  # si ya existe no falla
+        sed -i 's/# android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
+        sed -i 's/# android.sdk_path =/android.sdk_path = \/home\/runner\/.buildozer\/android\/platform\/android-sdk/' buildozer.spec
+        sed -i 's/# android.ndk_path =/android.ndk_path = \/home\/runner\/.buildozer\/android\/platform\/android-ndk-r25b/' buildozer.spec
+        sed -i 's/# android.build_tools_version =/android.build_tools_version = 30.0.3/' buildozer.spec
 
     - name: Build APK
       run: |
