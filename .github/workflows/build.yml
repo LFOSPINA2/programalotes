@@ -26,6 +26,10 @@ jobs:
         pip install cython
         pip install buildozer
 
+    - name: Prepare Buildozer
+      run: |
+        buildozer android update
+
     - name: Build APK
       run: |
         buildozer android debug
