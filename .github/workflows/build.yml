@@ -23,19 +23,30 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             python3-pip \
-            build-essential \
-            zip \
-            unzip \
             openjdk-17-jdk \
-            libstdc++6 \
-            libncurses6 \
-            git
+            unzip \
+            git \
+            zip \
+            build-essential \
+            libncurses6
+
           pip install --upgrade pip
           pip install Cython
           pip install buildozer
 
+      - name: Download and install Android SDK cmdline-tools
+        run: |
+          mkdir -p $HOME/android-sdk/cmdline-tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O cmdline-tools.zip
+          unzip cmdline-tools.zip
+          mv cmdline-tools $HOME/android-sdk/cmdline-tools/latest
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses
+          $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-31" "build-tools;30.0.3"
+
       - name: Build APK
         run: |
+          export ANDROID_HOME=$HOME/android-sdk
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
           buildozer android debug
 
       - name: Upload APK
