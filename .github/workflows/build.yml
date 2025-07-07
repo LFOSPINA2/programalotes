@@ -30,16 +30,18 @@ jobs:
             unzip \
             libncurses6 \
             libstdc++6 \
-            git \
-            openjdk-17-jdk
+            openjdk-17-jdk \
+            git
 
           pip install --upgrade pip
           pip install cython
           pip install buildozer
 
-      - name: Accept Android SDK licenses
+      - name: Accept Android SDK licenses and install build-tools
         run: |
-          yes | buildozer android update
+          mkdir -p ~/.android && touch ~/.android/repositories.cfg
+          yes | sdkmanager --licenses || true
+          sdkmanager --install "platform-tools" "platforms;android-31" "build-tools;31.0.0"
 
       - name: Build APK
         run: |
@@ -48,5 +50,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-release.apk
+          name: gestionlotes.apk
           path: bin/*.apk
