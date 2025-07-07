@@ -28,7 +28,7 @@ jobs:
             build-essential \
             zip \
             unzip \
-            libncurses5 \
+            libncurses6 \
             libstdc++6 \
             git \
             openjdk-17-jdk
@@ -39,7 +39,6 @@ jobs:
 
       - name: Accept Android SDK licenses
         run: |
-          yes | buildozer android clean
           yes | buildozer android update
 
       - name: Build APK
