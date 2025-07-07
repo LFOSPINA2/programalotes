@@ -1,40 +1,36 @@
+name: Build APK with Buildozer
+
 on:
   push:
     branches:
       - master
-  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Clonar repositorio
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Instalar dependencias del sistema
-      run: |
-        sudo apt update
-        sudo apt install -y \
-          build-essential git zip unzip openjdk-17-jdk \
-          python3-pip python3-setuptools python3-venv \
-          libffi-dev libssl-dev \
-          libsqlite3-dev zlib1g-dev \
-          libbz2-dev libreadline-dev liblzma-dev \
-          libncurses5-dev libgdbm-dev libnss3-dev libxml2-dev libxslt1-dev \
-          curl
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
 
-    - name: Instalar Buildozer
-      run: |
-        python3 -m venv venv
-        source venv/bin/activate
-        pip install --upgrade pip
-        pip install buildozer cython
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip python3-setuptools python3-venv zip unzip git openjdk-17-jdk
+          pip install buildozer
 
-    - name: Compilar APK
-      run: |
-        source venv/bin/activate
-        buildozer android debug
+      - name: Build APK
+        run: |
+          buildozer init || true
+          buildozer -v android debug
 
-    - name: Guardar artefacto APK
-      uses: actions/uplo
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-debug.apk
+          path: bin/*.apk
