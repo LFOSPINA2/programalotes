@@ -23,7 +23,7 @@ jobs:
         sudo apt update
         sudo apt install -y \
           libffi-dev libssl-dev python3-dev python3-pip build-essential \
-          git zip unzip openjdk-17-jdk libncurses5
+          git zip unzip openjdk-17-jdk libncurses5-dev
         pip install --upgrade pip
         pip install cython
         pip install buildozer
