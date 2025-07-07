@@ -1,26 +1,32 @@
-name: Build APK with Docker
+name: Build APK with Buildozer
 
 on:
   push:
     branches:
       - master
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Run Buildozer in Docker
-        run: |
-          docker run --rm -v ${{ github.workspace }}:/app \
-            kivy/buildozer \
-            bash -c "cd /app && buildozer android debug"
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v3
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release.apk
-          path: bin/*.apk
+    - name: Run Buildozer in Docker
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/app \
+          -w /app \
+          kivy/buildozer:stable \
+          buildozer android debug
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: my-app
+        path: bin/*.apk
